@@ -1,0 +1,115 @@
+.type-button {
+  display:inline-block;
+  white-space:no-wrap;
+}  
+  .type-button span {
+    display:inline-block;
+    padding:5px 8px;
+    margin:1px;
+    border:1px solid #d3d3d3;
+    background:#e6e6e6;
+    color:#555;
+    cursor:pointer;
+  }
+    .type-button span.active {
+      color:#212121;
+      border-color:#aaa;
+      background:#fff;
+    }
+    .type-button span:first-of-type {
+      border-radius:5px 0 0 5px;
+    }
+    .type-button span:last-of-type {
+      border-radius:0 5px 5px 0;
+    }
+    
+.strings {
+  border-collapse:collapse;
+  text-align:left !important;
+  margin:0;
+}
+  .strings th {
+    background:#999;
+    color:#eee;
+    padding:2px 5px;
+  }
+    .strings thead th:not(:first-of-type) {
+      border-left:1px solid #eee;
+    }
+    .strings thead th:first-of-type {
+      border-radius:5px 0 0 0;
+    }
+    .strings thead th:last-of-type {
+      border-radius:0 5px 0 0;
+    }
+    .strings tfoot th:first-of-type {
+      border-radius:0 0 0 5px;
+    }
+    .strings tfoot th:last-of-type {
+      border-radius:0 0 5px 0;
+    }
+  
+  .strings td {
+    background:#e7e7e7;
+    border-bottom:1px solid #ccc;
+    padding:2px 3px;
+    vertical-align:top;
+    color:#444;
+  }
+    .strings tr.missing td {
+      background:#EBD9D9;
+    }
+    .strings tr.useless td {
+      background:#DBEACC;
+    }
+    .strings tr:hover td {
+      background:#D9E2EB;
+    }
+  
+  .strings tr td:first-child {
+    cursor:pointer;
+    color:#666;
+  }
+    .strings tr td:first-child:hover:before {
+      color:#222;;
+    }
+  .strings tr td:nth-child(2) {
+    min-width:300px;
+    max-width:700px;
+  }
+  .strings tr td:nth-last-child(-n+3) {
+    text-align:center;
+  }
+  .strings tr td:nth-last-child(4) {
+    text-align:right;
+  }
+  
+  .strings ul {
+    border-top:1px solid #ccc;
+    display:none;
+    margin:3px 0 3px -3px !important;
+    padding:3px 0 0 20px !important;
+    font-family:monospace;
+    font-size:13px;
+  }
+    .strings ul li {
+      margin:0 !important;
+      line-height:1.5em !important;
+      list-style:disc;
+    }
+    
+  .strings .legend span:before {
+    content:" ";
+    display:inline-block;
+    width:10px;
+    height:10px;
+    overflow:hidden;
+    margin:0 3px 0 10px;
+  }
+    .strings .legend span.missing:before {
+      background:#EAAFAF;
+    }
+    .strings .legend span.useless:before {
+      background:#BFE599;
+    }
+  
