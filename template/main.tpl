@@ -80,7 +80,7 @@ $('form#pla').submit(function() {
 </form>
 
 {* <!-- configure --> *}
-{else if $PLA_STEP=='config'}
+{elseif $PLA_STEP=='config'}
 {footer_script}{literal}
 $('.type-button span').click(function() {
   $(this).siblings('span').removeClass('active');
@@ -117,7 +117,7 @@ $('.type-button span').click(function() {
 </form>
 
 {* <!-- analysis --> *}
-{else if $PLA_STEP=='analysis'}
+{elseif $PLA_STEP=='analysis'}
 {footer_script}{literal}
 $('.strings tr td:first-child').click(function() {
   if ($(this).hasClass('icon-plus-circled')) {

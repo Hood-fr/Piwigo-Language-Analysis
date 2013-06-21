@@ -30,7 +30,7 @@ function pla_begin_admin()
 
 function pla_add_menu_item($content, &$smarty)
 {
-  $search = '<li><a class="icon-arrows-cw" href="{$U_UPDATES}">{\'Updates\'|@translate}</a></li>';
+  $search = 'href="{$U_UPDATES}">{\'Updates\'|@translate}</a></li>';
   $add = '<li><a class="icon-language" href="'.PLA_ADMIN.'">Plugin Language Analysis</a></li>';
   return str_replace($search, $search."\n".$add, $content);
 }
