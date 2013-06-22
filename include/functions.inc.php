@@ -63,7 +63,7 @@ function analyze_file($path)
   foreach ($lines as $i => $line)
   {
     // l10n
-    if (preg_match_all('#l10n\((?:[ ]*)(?:["\']{1})(.*?)(?:["\']{1})(?:[ ]*)\)#', $line, $matches))
+    if (preg_match_all('#l10n\((?:\s*)(?:["\']{1})(.*?)(?:["\']{1})(?:\s*)\)#', $line, $matches))
     {
       for ($j=0; $j<count($matches[1]); ++$j)
       {
@@ -71,7 +71,7 @@ function analyze_file($path)
       }
     }
     // translate
-    if (preg_match_all('#\{(?:["\']{1})(.*?)(?:["\']{1})\|\@translate#', $line, $matches))
+    if (preg_match_all('#\{(?:["\']{1})(.*?)(?:["\']{1})\|(?:@{0,1})translate#', $line, $matches))
     {
       for ($j=0; $j<count($matches[1]); ++$j)
       {
@@ -79,7 +79,7 @@ function analyze_file($path)
       }
     }
     // l10n_dec on one line
-    if (preg_match_all('#l10n_dec\((?:[ ]*)(?:["\']{1})(.*?)(?:["\']{1})(?:[ ]*),(?:[ ]*)(?:["\']{1})(.*?)(?:["\']{1})#', $line, $matches))
+    if (preg_match_all('#l10n_dec\((?:\s*)(?:["\']{1})(.*?)(?:["\']{1})(?:\s*),(?:\s*)(?:["\']{1})(.*?)(?:["\']{1})#', $line, $matches))
     {
       for ($j=0; $j<count($matches[1]); ++$j)
       {
@@ -97,7 +97,7 @@ function analyze_file($path)
         if (isset($lines[$i+2])) $three_lines.= ' '.$lines[$i+2];
       }
       
-      if (preg_match_all('#l10n_dec\((?:[ ]*)(?:["\']{1})(.*?)(?:["\']{1})(?:[ ]*),(?:[ ]*)(?:["\']{1})(.*?)(?:["\']{1})#', $three_lines, $matches))
+      if (preg_match_all('#l10n_dec\((?:\s*)(?:["\']{1})(.*?)(?:["\']{1})(?:\s*),(?:\s*)(?:["\']{1})(.*?)(?:["\']{1})#', $three_lines, $matches))
       {
         for ($j=0; $j<count($matches[1]); ++$j)
         {

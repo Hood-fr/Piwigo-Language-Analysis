@@ -1,3 +1,10 @@
+.text-common {
+  color:#5E9100 !important;
+}
+.text-admin {
+  color:#E23D3B !important;
+}
+    
 .type-button {
   display:inline-block;
   white-space:no-wrap;
@@ -6,15 +13,18 @@
     display:inline-block;
     padding:5px 8px;
     margin:1px;
-    border:1px solid #d3d3d3;
     background:#e6e6e6;
     color:#555;
     cursor:pointer;
   }
     .type-button span.active {
       color:#212121;
-      border-color:#aaa;
-      background:#fff;
+    }
+    .type-button span.common.active {
+      background:#BAFF3F;
+    }
+    .type-button span.admin.active {
+      background:#FF5E5B;
     }
     .type-button span:first-of-type {
       border-radius:5px 0 0 5px;
@@ -32,6 +42,7 @@
     background:#999;
     color:#eee;
     padding:2px 5px;
+    white-space:nowrap;
   }
     .strings thead th:not(:first-of-type) {
       border-left:1px solid #eee;

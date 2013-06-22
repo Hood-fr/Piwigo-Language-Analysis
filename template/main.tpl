@@ -86,7 +86,7 @@ $('.type-button span').click(function() {
   $(this).siblings('span').removeClass('active');
   $(this).addClass('active');
   
-  if ($(this).data('type') == 'common') {
+  if ($(this).hasClass('common')) {
     $(this).nextAll('input').val('false');
   }
   else {
@@ -105,8 +105,8 @@ $('.type-button span').click(function() {
   
   {foreach from=$PLA_FILES item=file}
     <div class="type-button">
-      <span class="item {if not $file.is_admin}active{/if}" data-type="common">{'Common'|@translate}</span><!--
-      --><span class="item {if $file.is_admin}active{/if}" data-type="admin">{'Admin'|@translate}</span>
+      <span class="item common {if not $file.is_admin}active{/if}">{'Common'|@translate}</span><!--
+      --><span class="item admin {if $file.is_admin}active{/if}">{'Admin'|@translate}</span>
       <input type="hidden" name="files[{$file.path}]" value="{if $file.is_admin}true{else}false{/if}">
     </div>
     {$file.path}<br>
@@ -157,11 +157,13 @@ $('.strings tr td:first-child').click(function() {
         {$string|htmlspecialchars}
         <ul>
         {foreach from=$data.files item=lines key=file}
-          <li>{$file} <i>({', '|@implode:$lines})</i></li>
+          <li class="text-{if $PLA_FILES[$file].is_admin}admin{else}common{/if}">
+            {$file} <i>({', '|@implode:$lines})</i></li>
         {/foreach}
         </ul>
       </td>
-      <td>{if $data.is_admin}{'Admin'|@translate}{else}{'Common'|@translate}{/if}</td>
+      {if $data.is_admin}<td class="text-admin">{'Admin'|@translate}</td>
+      {else}<td class="text-common">{'Common'|@translate}</td>{/if}
       <td>{if $data.in_plugin}<b>{'Yes'|@translate}</b>{else}{'No'|@translate}{/if}</td>
       <td>{if $data.in_common}<b>{'Yes'|@translate}</b>{else}{'No'|@translate}{/if}</td>
       <td>{if $data.in_admin}<b>{'Yes'|@translate}</b>{else}{'No'|@translate}{/if}</td>
