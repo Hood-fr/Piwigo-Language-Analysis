@@ -6,22 +6,15 @@ global $template, $page;
 $page['active_menu'] = get_active_menu('updates');
 
 include_once(PLA_PATH . 'include/functions.inc.php');
-
+include_once(PHPWG_ROOT_PATH . '/admin/include/plugins.class.php');
+$plugins = new plugins();
 
 /* PLUGINS LIST */
 if (!isset($_GET['plugin_id']))
 {
-  $query = '
-SELECT *
-  FROM '.PLUGINS_TABLE.'
-  ORDER BY LOWER(id)
-;';
-
-  $plugins = hash_from_query($query, 'id');
-
   $template->assign(array(
     'PLA_STEP' => 'select',
-    'PLA_PLUGINS' => $plugins,
+    'PLA_PLUGINS' => $plugins->fs_plugins,
     'F_ACTION' => PLA_ADMIN,
     ));
 }
@@ -30,15 +23,23 @@ SELECT *
 else if (!isset($_GET['analyze']))
 {
   $files = list_plugin_files($_GET['plugin_id']);
+  $language_files = list_plugin_languages_files($_GET['plugin_id']);
+  
+  $default_lang_files = get_loaded_in_main($_GET['plugin_id']);
+  if (empty($default_lang_files))
+  {
+    $default_lang_files = count($language_files)==1 ? array_keys($language_files) : (
+                            array_key_exists('plugin.lang', $language_files) ? array('plugin.lang') : array()
+                            );
+  }
   
   if (file_exists(PLA_PATH.'_data/'.$_GET['plugin_id'].'.php'))
   {
-    list($filename, $saved_files) = @include(PLA_PATH.'_data/'.$_GET['plugin_id'].'.php');
+    $saved_files = include(PLA_PATH.'_data/'.$_GET['plugin_id'].'.php');
   }
   else
   {
     $saved_files = array();
-    $filename = 'plugin.lang.php';
   }
   
   foreach ($files as &$file)
@@ -46,12 +47,14 @@ else if (!isset($_GET['analyze']))
     if (isset($saved_files[$file]))
     {
       $file = $saved_files[$file];
+      $file['lang_files'] = array_intersect($file['lang_files'], array_keys($language_files));
     }
     else
     {
       $file = array(
         'path' => $file,
         'is_admin' => strpos($file, '/admin') === 0,
+        'lang_files' => $default_lang_files
         );
     }
   }
@@ -59,9 +62,9 @@ else if (!isset($_GET['analyze']))
   
   $template->assign(array(
     'PLA_STEP' => 'config',
-    'PLA_PLUGIN' => $_GET['plugin_id'],
+    'PLA_PLUGIN' => $plugins->fs_plugins[ $_GET['plugin_id'] ],
     'PLA_FILES' => $files,
-    'PLA_FILENAME' => $filename,
+    'PLA_LANG_FILES' => $language_files,
     'F_ACTION' => PLA_ADMIN.'&amp;plugin_id='.$_GET['plugin_id'].'&amp;analyze',
     'U_BACK' => PLA_ADMIN,
     ));
@@ -71,19 +74,22 @@ else
   // save
   if (isset($_POST['files']))
   {
-    $filename = $_POST['filename'];
-    
     $files = array();
-    foreach ($_POST['files'] as $file => $is_admin)
+    foreach ($_POST['files'] as $file => $data)
     {
       $files[$file] = array(
         'path' => $file,
-        'is_admin' => $is_admin=='true',
+        'is_admin' => $data['is_admin']=='true',
+        'lang_files' => array(),
         );
+      if (!empty($data['lang_files']))
+      {
+        $files[$file]['lang_files'] = array_keys(array_filter($data['lang_files'], create_function('$f', 'return $f=="true";')));
+      }
     }
     
     $content = "<?php\nreturn ";
-    $content.= var_export(array($filename, $files), true);
+    $content.= var_export($files, true);
     $content.= ";\n?>";
     
     @mkdir(PLA_PATH.'_data/', true, 0755);
@@ -91,9 +97,8 @@ else
   }
   else
   {
-    list($filename, $files) = include(PLA_PATH.'_data/'.$_GET['plugin_id'].'.php');
+    $files = include(PLA_PATH.'_data/'.$_GET['plugin_id'].'.php');
   }
-  
   
   $strings = array();
   $counts = array('ok'=>0,'missing'=>0,'useless'=>0);
@@ -105,37 +110,86 @@ else
     
     foreach ($file_strings as $string => $lines)
     {
-      if (empty($strings[ $string ]))
-        $strings[ $string ]['is_admin'] = $file_data['is_admin'];
-      else
-        $strings[ $string ]['is_admin'] = $strings[ $string ]['is_admin'] && $file_data['is_admin'];
-      
-      $strings[ $string ]['files'][ $file ] = $lines;
+      $strings[ $string ]['files'][ $file ] = $file_data + array('lines' => $lines);
     }
   }
   
   // load language files
   $lang_common = load_language_file(PHPWG_ROOT_PATH.'language/en_UK/common.lang.php');
   $lang_admin = load_language_file(PHPWG_ROOT_PATH.'language/en_UK/admin.lang.php');
-  $lang_plugin = load_language_file(PHPWG_PLUGINS_PATH.$_GET['plugin_id'].'/language/en_UK/'.$filename);
+  
+  $language_files = list_plugin_languages_files($_GET['plugin_id']);
+  foreach ($language_files as $name => $path)
+  {
+    $lang_plugin[ $name ] = load_language_file(PHPWG_PLUGINS_PATH.$_GET['plugin_id'].$path);
+  }
   
   // analyze
   foreach ($strings as $string => &$string_data)
   {
+    // find where teh string is defined
     $string_data['in_common'] = array_key_exists($string, $lang_common);
     $string_data['in_admin'] = array_key_exists($string, $lang_admin);
-    $string_data['in_plugin'] = array_key_exists($string, $lang_plugin);
-    
-    if ($string_data['in_plugin'] && ($string_data['in_common'] || ($string_data['is_admin'] && $string_data['in_admin'])))
+    $string_data['in_plugin'] = array();
+    foreach ($language_files as $name => $path)
     {
-      $string_data['stat'] = 'useless';
-      $counts['useless']++;
+      if (array_key_exists($string, $lang_plugin[$name])) $string_data['in_plugin'][] = $name;
     }
-    else if (!$string_data['in_plugin'] && !$string_data['in_common'] && (!$string_data['is_admin'] || !$string_data['in_admin']))
+    
+    $missing = $useless = $ok = false;
+    $string_data['is_admin'] = true;
+    
+    // analyze for each file where the string exists
+    foreach ($string_data['files'] as $file => &$file_data)
+    {
+      // the string is "admin" if all files are "admin"
+      $string_data['is_admin'] &= $file_data['is_admin'];
+      
+      // find if the string is translated in one of the language files included in this file
+      $exists = false;
+      foreach ($file_data['lang_files'] as $lang_file)
+      {
+        if (in_array($lang_file, $string_data['in_plugin']))
+        {
+          $exists = true;
+          break;
+        }
+      }
+      
+      // useless if translated in the plugin AND in common or admin
+      if ($exists && ($string_data['in_common'] || ($file_data['is_admin'] && $string_data['in_admin'])))
+      {
+        $file_data['stat'] = 'useless';
+        $useless = true;
+      }
+      // missing if not translated in the plugin NOR in common or admin
+      else if (!$exists && !$string_data['in_common'] && (!$file_data['is_admin'] || !$string_data['in_admin']))
+      {
+        $file_data['stat'] = 'missing';
+        $missing = true;
+      }
+      // else ok
+      else
+      {
+        $file_data['stat'] = 'ok';
+        $ok = true;
+      }
+    }
+    unset($file_data);
+    
+    // string is missing if at least missing in one file
+    if ($missing)
     {
       $string_data['stat'] = 'missing';
       $counts['missing']++;
     }
+    // string is useless if useless in all files
+    else if ($useless && !$ok)
+    {
+      $string_data['stat'] = 'useless';
+      $counts['useless']++;
+    }
+    // else ok
     else
     {
       $string_data['stat'] = 'ok';
@@ -149,9 +203,9 @@ else
   
   $template->assign(array(
     'PLA_STEP' => 'analysis',
-    'PLA_PLUGIN' => $_GET['plugin_id'],
-    'PLA_FILES' => $files,
+    'PLA_PLUGIN' => $plugins->fs_plugins[ $_GET['plugin_id'] ],
     'PLA_STRINGS' => $strings,
+    'PLA_LANG_FILES' => $language_files,
     'PLA_COUNTS' => $counts,
     'U_BACK' => PLA_ADMIN.'&amp;plugin_id='.$_GET['plugin_id'],
     ));

@@ -5,34 +5,45 @@
   color:#E23D3B !important;
 }
     
-.type-button {
+.switch-button {
   display:inline-block;
-  white-space:no-wrap;
 }  
-  .type-button span {
-    display:inline-block;
+  .switch-button span {
+    float:left;
     padding:5px 8px;
-    margin:1px;
     background:#e6e6e6;
     color:#555;
     cursor:pointer;
   }
-    .type-button span.active {
+    .switch-button span.active {
       color:#212121;
     }
-    .type-button span.common.active {
+    .switch-button span.common.active {
       background:#BAFF3F;
     }
-    .type-button span.admin.active {
+    .switch-button span.admin.active {
       background:#FF5E5B;
     }
-    .type-button span:first-of-type {
+    .switch-button span.other.active {
+      background:#4CC6FF;
+    }
+    .switch-button span:first-of-type {
       border-radius:5px 0 0 5px;
     }
-    .type-button span:last-of-type {
+    .switch-button span:last-of-type {
       border-radius:0 5px 5px 0;
     }
-    
+    .switch-button span:only-of-type {
+      border-radius:5px;
+    }
+
+.files {
+  border-collapse:separate;
+  border-spacing:10px 0;
+  text-align:left !important;
+  margin:0;
+}
+
 .strings {
   border-collapse:collapse;
   text-align:left !important;
@@ -62,7 +73,7 @@
   
   .strings td {
     background:#e7e7e7;
-    border-bottom:1px solid #ccc;
+    border-top:1px solid #ccc;
     padding:2px 3px;
     vertical-align:top;
     color:#444;
@@ -73,40 +84,31 @@
     .strings tr.useless td {
       background:#DBEACC;
     }
-    .strings tr:hover td {
+    .strings tr.hover td {
       background:#D9E2EB;
     }
   
-  .strings tr td:first-child {
+  .strings tr td.toggler {
     cursor:pointer;
     color:#666;
   }
     .strings tr td:first-child:hover:before {
-      color:#222;;
+      color:#222;
     }
   .strings tr td:nth-child(2) {
     min-width:300px;
     max-width:700px;
   }
-  .strings tr td:nth-last-child(-n+3) {
-    text-align:center;
-  }
-  .strings tr td:nth-last-child(4) {
+  .strings tr td:nth-child(3) {
     text-align:right;
   }
   
-  .strings ul {
-    border-top:1px solid #ccc;
+  .strings tr.file {
     display:none;
-    margin:3px 0 3px -3px !important;
-    padding:3px 0 0 20px !important;
-    font-family:monospace;
-    font-size:13px;
+    font-size:0.8em;
   }
-    .strings ul li {
-      margin:0 !important;
-      line-height:1.5em !important;
-      list-style:disc;
+    .strings tr.file td {
+      border-color:#ddd;
     }
     
   .strings .legend span:before {

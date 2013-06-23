@@ -3,6 +3,8 @@ defined('PLA_PATH') or die('Hacking attempt!');
 
 /**
  * list files of a plugin
+ * @param: string $id, plugin id
+ * @return: array of paths relative to plugin root
  */
 function list_plugin_files($id, $path=null)
 {
@@ -21,7 +23,7 @@ function list_plugin_files($id, $path=null)
     return array();
   }
   
-  if (($handle = opendir(PHPWG_PLUGINS_PATH.$id.$path)) === false)
+  if (($handle = @opendir(PHPWG_PLUGINS_PATH.$id.$path)) === false)
   {
     return array();
   }
@@ -52,7 +54,44 @@ function list_plugin_files($id, $path=null)
 }
 
 /**
+ * list language files of a plugin
+ * @param: string $id, plugin id
+ * @return: array, keys are basenames, values are paths relative to plugin root
+ */
+function list_plugin_languages_files($id)
+{
+  $path = '/language/en_UK/';
+  
+  if (($handle = @opendir(PHPWG_PLUGINS_PATH.$id.$path)) === false)
+  {
+    return array();
+  }
+  
+  $data = array();
+  
+  while ($entry = readdir($handle))
+  {
+    if ($entry=='.' || $entry=='..' || $entry=='.svn' || $entry=='index.php') continue;
+    
+    if (!is_dir(PHPWG_PLUGINS_PATH.$id.$path.$entry))
+    {
+      $ext = strtolower(get_extension($entry));
+      if ($ext == 'php')
+      {
+        $data[ basename($entry, '.php') ] = $path.$entry;
+      }
+    }
+  }
+  
+  closedir($handle);
+  
+  return $data;
+}
+
+/**
  * list translated strings of a file
+ * @param: string $path, file $path relative to main plugins folder
+ * @return: array, keys are language strings, values are arrays of lines
  */
 function analyze_file($path)
 {
@@ -109,6 +148,25 @@ function analyze_file($path)
   }
   
   return $strings;
+}
+
+/**
+ * get language files loaded in main.inc.php
+ * @param: string $id, plugin id
+ * @return: array of file basenames
+ */
+function get_loaded_in_main($id)
+{
+  $content = file_get_contents(PHPWG_PLUGINS_PATH.$id.'/main.inc.php');
+  
+  $files = array();
+  
+  if (preg_match_all('#load_language\((?:\s*)(?:["\']{1})(.*?)(?:["\']{1})#', $content, $matches))
+  {
+    $files = $matches[1];
+  }
+  
+  return $files;
 }
 
 /**
