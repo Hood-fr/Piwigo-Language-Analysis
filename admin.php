@@ -33,9 +33,9 @@ else if (!isset($_GET['analyze']))
                             );
   }
   
-  if (file_exists(PLA_PATH.'_data/'.$_GET['plugin_id'].'.php'))
+  if (file_exists(PLA_DATA.$_GET['plugin_id'].'.php'))
   {
-    $saved_files = include(PLA_PATH.'_data/'.$_GET['plugin_id'].'.php');
+    $saved_files = include(PLA_DATA.$_GET['plugin_id'].'.php');
   }
   else
   {
@@ -94,12 +94,12 @@ else
     $content.= var_export($files, true);
     $content.= ";\n?>";
     
-    @mkdir(PLA_PATH.'_data/', true, 0755);
-    file_put_contents(PLA_PATH.'_data/'.$_GET['plugin_id'].'.php', $content);
+    @mkdir(PLA_DATA, true, 0755);
+    file_put_contents(PLA_DATA.$_GET['plugin_id'].'.php', $content);
   }
   else
   {
-    $files = include(PLA_PATH.'_data/'.$_GET['plugin_id'].'.php');
+    $files = include(PLA_DATA.$_GET['plugin_id'].'.php');
   }
   
   $strings = array();
