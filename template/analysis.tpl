@@ -87,7 +87,7 @@ $('.tiptip').tipTip({
       <td class="toggler iconpla-plus-circled"></td>
       <td>
         {$string|htmlspecialchars}
-        {if isset($data.warnings)}<span class="iconpla-attention-circled tiptip" title="{'<br>'|@implode:$data.warning}"></span>{/if}
+        {if isset($data.warnings)}<span class="iconpla-attention-circled tiptip" title="{'<br>'|@implode:$data.warnings}"></span>{/if}
       </td>
       {if $data.is_admin}<td class="text-admin">{'Admin'|@translate}</td>
       {else}<td class="text-common">{'Common'|@translate}</td>{/if}
@@ -110,6 +110,12 @@ $('.tiptip').tipTip({
         <td></td>
         <td></td>
       </tr>
+    {foreachelse}
+      <tr class="file string-{$data.stat} useless">
+        <td></td>
+        <td><i>{'Unused'|@translate}</i></td>
+        {'<td></td>'|str_repeat:(3+$PLA_LANG_FILES|@count)}
+      </tr>
     {/foreach} {* <!-- end file --> *}
   {/foreach} {* <!-- end string --> *}
   </tbody>
@@ -118,12 +124,7 @@ $('.tiptip').tipTip({
     <tr>
       <th></th>
       <th>{'%d strings : %d missing and %d useless.'|@translate|sprintf:$PLA_COUNTS.total:$PLA_COUNTS.missing:$PLA_COUNTS.useless}</th>
-      <th></th>
-    {foreach from=$PLA_LANG_FILES item=path key=lang_file}
-      <th></th>
-    {/foreach}
-      <th></th>
-      <th></th>
+      {'<th></th>'|str_repeat:(3+$PLA_LANG_FILES|@count)}
     </tr>
   </tfoot>
   </table>

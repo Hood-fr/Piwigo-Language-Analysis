@@ -20,7 +20,7 @@ global $conf;
 defined('PLA_ID') or define('PLA_ID', basename(dirname(__FILE__)));
 define('PLA_PATH' , PHPWG_PLUGINS_PATH . PLA_ID . '/');
 define('PLA_ADMIN', get_root_url() . 'admin.php?page=plugin-' . PLA_ID);
-define('PLA_DATA', $conf['data_location'] . PLA_ID . '/');
+define('PLA_DATA',  $conf['data_location'] . PLA_ID . '/');
 
 add_event_handler('loc_begin_admin', 'pla_begin_admin');
 

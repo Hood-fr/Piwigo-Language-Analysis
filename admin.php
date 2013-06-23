@@ -204,6 +204,33 @@ else
   }
   unset($string_data);
   
+  // unused strings
+  $unused = array();
+  foreach ($language_files as $name => $path)
+  {
+    $unused = array_merge($unused, array_diff_key($lang_plugin[ $name ], $strings));
+  }
+  
+  foreach ($unused as $string => $translation)
+  {
+    $string_data = array(
+      'files' => array(),
+      'in_common' => array_key_exists($string, $lang_common),
+      'in_admin' => array_key_exists($string, $lang_admin),
+      'in_plugin' => array(),
+      'stat' => 'useless',
+      'is_admin' => false,
+      'warning' => array(l10n('This string is not used anywhere in the plugin')),
+      );
+      
+    foreach ($language_files as $name => $path)
+    {
+      if (array_key_exists($string, $lang_plugin[$name])) $string_data['in_plugin'][] = $name;
+    }
+    
+    $strings[ $string ] = $string_data;
+  }
+  
   uksort($strings, 'strnatcasecmp'); // natural sort
   $counts['total'] = array_sum($counts);
   
