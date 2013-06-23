@@ -12,9 +12,12 @@
     float:left;
     padding:5px 8px;
     background:#e6e6e6;
-    color:#555;
+    color:#888;
     cursor:pointer;
   }
+    .switch-button span:hover {
+      text-decoration:underline;
+    }
     .switch-button span.active {
       color:#212121;
     }
@@ -125,4 +128,7 @@
     .strings .legend span.useless:before {
       background:#BFE599;
     }
-  
+
+.tiptip {
+  cursor:help;
+}
