@@ -110,11 +110,20 @@ function analyze_file($path)
       }
     }
     // translate
-    if (preg_match_all('#\{(?:["\']{1})(.*?)(?:["\']{1})\|(?:@{0,1})translate#', $line, $matches))
+    if (preg_match_all('#\{(?:\\\\{0,1})(?:["\']{1})(.*?)(?:\\\\{0,1})(?:["\']{1})\|(?:@{0,1})translate#', $line, $matches))
     {
       for ($j=0; $j<count($matches[1]); ++$j)
       {
         $strings[ stripslashes($matches[1][$j]) ][] = $i+1;
+      }
+    }
+    // translate_dec
+    if (preg_match_all('#translate_dec:(?:\\\\{0,1})(?:["\']{1})(.*?)(?:\\\\{0,1})(?:["\']{1}):(?:\\\\{0,1})(?:["\']{1})(.*?)(?:\\\\{0,1})(?:["\']{1})}#', $line, $matches))
+    {
+      for ($j=0; $j<count($matches[1]); ++$j)
+      {
+        $strings[ stripslashes($matches[1][$j]) ][] = $i+1;
+        $strings[ stripslashes($matches[2][$j]) ][] = $i+1;
       }
     }
     // l10n_dec on one line

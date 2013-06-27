@@ -229,6 +229,7 @@ else
     }
     
     $strings[ $string ] = $string_data;
+    $counts['useless']++;
   }
   
   uksort($strings, 'strnatcasecmp'); // natural sort
