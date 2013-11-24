@@ -15,12 +15,12 @@ if (!isset($_GET['plugin_id']))
   $template->assign(array(
     'PLA_STEP' => 'select',
     'PLA_PLUGINS' => $plugins->fs_plugins,
-    'F_ACTION' => PLA_ADMIN,
+    'F_ACTION' => PLA_ADMIN.'&amp;config',
     ));
 }
 
 /* CONFIG */
-else if (!isset($_GET['analyze']))
+else if (isset($_GET['config']))
 {
   $files = list_plugin_files($_GET['plugin_id']);
   $language_files = list_plugin_languages_files($_GET['plugin_id']);
@@ -71,7 +71,7 @@ else if (!isset($_GET['analyze']))
 }
 
 /* ANALYSIS */
-else
+else if (isset($_GET['analyze']))
 {
   // save
   if (isset($_POST['files']))
@@ -241,7 +241,7 @@ else
     'PLA_STRINGS' => $strings,
     'PLA_LANG_FILES' => array_keys($language_files),
     'PLA_COUNTS' => $counts,
-    'U_BACK' => PLA_ADMIN.'&amp;plugin_id='.$_GET['plugin_id'],
+    'U_BACK' => PLA_ADMIN.'&amp;plugin_id='.$_GET['plugin_id'].'&amp;config',
     ));
 }
 

@@ -102,7 +102,7 @@ function analyze_file($path)
   foreach ($lines as $i => $line)
   {
     // l10n
-    if (preg_match_all('#l10n\((?:\s*)(?:["\']{1})(.*?)(?:["\']{1})(?:\s*)\)#', $line, $matches))
+    if (preg_match_all('#l10n\((?:\s*)(?:["\']{1})(.*?)(?:["\']{1})#', $line, $matches))
     {
       for ($j=0; $j<count($matches[1]); ++$j)
       {

@@ -1,9 +1,9 @@
-{footer_script}{literal}
+{footer_script}
 $('form#pla').submit(function() {
-  window.location.href = location.href + '&plugin_id=' + $(this).find('select').val();
+  window.location.href = $(this).attr('action') + '&plugin_id=' + $(this).find('select').val();
   return false;
 });
-{/literal}{/footer_script}
+{/footer_script}
 
 <form method="GET" action="{$F_ACTION}" class="properties" id="pla">
 <fieldset>

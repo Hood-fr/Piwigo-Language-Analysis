@@ -54,6 +54,7 @@ $('.tiptip').tipTip({
 }
 {/html_style}
 
+<form class="properties">
 <fieldset>
   <legend>{'Analysis results'|@translate}</legend>
   
@@ -129,3 +130,4 @@ $('.tiptip').tipTip({
   </tfoot>
   </table>
 </fieldset>
+</form>
