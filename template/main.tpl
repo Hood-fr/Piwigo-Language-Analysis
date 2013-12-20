@@ -11,5 +11,5 @@
 {include file=$PLA_ABS_PATH|cat:'template/'|cat:$PLA_STEP|cat:'.tpl'}
 
 {if isset($U_BACK)}
-<p style="text-align:left;margin-left:20px;"><a href="{$U_BACK}" class="buttonLike">{'Back'|@translate}</a></p>
+<p style="text-align:left;margin-left:20px;"><a href="{$U_BACK}" class="buttonLike">{'Back'|translate}</a></p>
 {/if}

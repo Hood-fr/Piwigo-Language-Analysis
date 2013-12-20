@@ -154,6 +154,14 @@ function analyze_file($path)
         }
       }
     }
+    // l10n_args
+    if (preg_match_all('#get_l10n_args\((?:\s*)(?:["\']{1})(.*?)(?:["\']{1})#', $line, $matches))
+    {
+      for ($j=0; $j<count($matches[1]); ++$j)
+      {
+        $strings[ stripslashes($matches[1][$j]) ][] = $i+1;
+      }
+    }
   }
   
   return $strings;

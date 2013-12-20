@@ -53,7 +53,7 @@ else if (isset($_GET['config']))
     {
       $file = array(
         'path' => $file,
-        'is_admin' => strpos($file, '/admin') === 0,
+        'is_admin' => strpos($file, '/admin') === 0 || strpos($file, 'admin.tpl') !== false,
         'lang_files' => $default_lang_files
         );
     }
@@ -242,6 +242,7 @@ else if (isset($_GET['analyze']))
     'PLA_LANG_FILES' => array_keys($language_files),
     'PLA_COUNTS' => $counts,
     'U_BACK' => PLA_ADMIN.'&amp;plugin_id='.$_GET['plugin_id'].'&amp;config',
+    'U_REFRESH' => PLA_ADMIN.'&amp;plugin_id='.$_GET['plugin_id'].'&amp;analyze',
     ));
 }
 

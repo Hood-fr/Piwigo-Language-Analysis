@@ -1,13 +1,13 @@
-{footer_script}
+{footer_script}{literal}
 $('form#pla').submit(function() {
   window.location.href = $(this).attr('action') + '&plugin_id=' + $(this).find('select').val();
   return false;
 });
-{/footer_script}
+{/literal}{/footer_script}
 
 <form method="GET" action="{$F_ACTION}" class="properties" id="pla">
 <fieldset>
-  <legend>{'Select a plugin'|@translate}</legend>
+  <legend>{'Select a plugin'|translate}</legend>
   
   <select name="plugin_id">
   {foreach from=$PLA_PLUGINS item=plugin key=plugin_id}
@@ -15,11 +15,11 @@ $('form#pla').submit(function() {
   {/foreach}
   </select>
 
-  <p class="formButtons"><input type="submit" value="{'Continue'|@translate}"></p>
+  <p class="formButtons"><input type="submit" value="{'Continue'|translate}"></p>
 </fieldset>
 
 <fieldset>
-  <legend>{'How to use?'|@translate}</legend>
+  <legend>{'How to use?'|translate}</legend>
 
   <p>
     This tool analyses each file of the selected plugin, searching for <b>l10n</b>, <b>l10n_dec</b> and <b>translate</b> functions.<br>
@@ -64,7 +64,7 @@ $('form#pla').submit(function() {
 </fieldset>
 
 <fieldset>
-  <legend>{'Limitations'|@translate}</legend>
+  <legend>{'Limitations'|translate}</legend>
   
   <p>
     For both core and plugin dependencies, we assume that the language files are loaded at the beginning of the file and available for the whole file. In practice this is not true because of functions, triggers, pre-filters, etc.

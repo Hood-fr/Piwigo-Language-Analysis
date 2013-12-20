@@ -25,14 +25,14 @@ $('.switch-button.other span').click(function() {
 
 <form method="POST" action="{$F_ACTION}" class="properties">
 <fieldset>
-  <legend>{'Select dependencies'|@translate}</legend>
+  <legend>{'Select dependencies'|translate}</legend>
   
   <table class="files">
   <thead>
     <tr>
       <th></th>
-      <th>{'Core dependency'|@translate}</th>
-      <th>{'Local dependencies'|@translate}</th>
+      <th>{'Core dependency'|translate}</th>
+      <th>{'Local dependencies'|translate}</th>
     </tr>
   </thead>
   
@@ -42,8 +42,8 @@ $('.switch-button.other span').click(function() {
       <td>{$file.path}</td>
       <td>
         <div class="switch-button type">
-          <span class="item common {if not $file.is_admin}active{/if}">{'Common'|@translate}</span>
-          <span class="item admin {if $file.is_admin}active{/if}">{'Admin'|@translate}</span>
+          <span class="item common {if not $file.is_admin}active{/if}">{'Common'|translate}</span>
+          <span class="item admin {if $file.is_admin}active{/if}">{'Admin'|translate}</span>
           <input type="hidden" name="files[{$file.path}][is_admin]" value="{if $file.is_admin}true{else}false{/if}">
         </div>
       </td>
@@ -60,6 +60,6 @@ $('.switch-button.other span').click(function() {
   </tbody>
   </table>
   
-  <p class="formButtons"><input type="submit" value="{'Continue'|@translate}"></p>
+  <p class="formButtons"><input type="submit" value="{'Continue'|translate}"></p>
 </fieldset>
 </form>
