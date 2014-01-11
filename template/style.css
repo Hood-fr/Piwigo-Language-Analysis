@@ -30,6 +30,9 @@
     .switch-button span.other.active {
       background:#4CC6FF;
     }
+    .switch-button span.ignore.active {
+      background:#ff0000;
+    }
     .switch-button span:first-of-type {
       border-radius:5px 0 0 5px;
     }

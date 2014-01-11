@@ -54,7 +54,8 @@ else if (isset($_GET['config']))
       $file = array(
         'path' => $file,
         'is_admin' => strpos($file, '/admin') === 0 || strpos($file, 'admin.tpl') !== false,
-        'lang_files' => $default_lang_files
+        'ignore' => false,
+        'lang_files' => $default_lang_files,
         );
     }
   }
@@ -82,6 +83,7 @@ else if (isset($_GET['analyze']))
       $files[ $file ] = array(
         'path' => $file,
         'is_admin' => $data['is_admin']=='true',
+        'ignore' => $data['ignore']=='true',
         'lang_files' => array(),
         );
       if (!empty($data['lang_files']))
@@ -108,6 +110,8 @@ else if (isset($_GET['analyze']))
   // get strings list
   foreach ($files as $file => $file_data)
   {
+    if ($file_data['ignore']) continue;
+
     $file_strings = analyze_file($_GET['plugin_id'].$file);
     
     foreach ($file_strings as $string => $lines)

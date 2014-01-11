@@ -21,6 +21,17 @@ $('.switch-button.other span').click(function() {
     $(this).next('input').val('true');
   }
 });
+
+$('.switch-button.ignore span').click(function() {
+  if ($(this).hasClass('active')) {
+    $(this).removeClass('active');
+    $(this).next('input').val('false');
+  }
+  else {
+    $(this).addClass('active');
+    $(this).next('input').val('true');
+  }
+});
 {/literal}{/footer_script}
 
 <form method="POST" action="{$F_ACTION}" class="properties">
@@ -33,6 +44,7 @@ $('.switch-button.other span').click(function() {
       <th></th>
       <th>{'Core dependency'|translate}</th>
       <th>{'Local dependencies'|translate}</th>
+      <th>{'Ignore'|translate}</th>
     </tr>
   </thead>
   
@@ -53,6 +65,12 @@ $('.switch-button.other span').click(function() {
           <span class="item other {if $lang_file|in_array:$file.lang_files}active{/if}">{$lang_file}</span>
           <input type="hidden" name="files[{$file.path}][lang_files][{$lang_file}]" value="{if $lang_file|in_array:$file.lang_files}true{else}false{/if}">
         {/foreach}
+        </div>
+      </td>
+      <td>
+        <div class="switch-button ignore">
+          <span class="item ignore {if $file.ignore}active{/if}">&times;</span>
+          <input type="hidden" name="files[{$file.path}][ignore]" value="{if $file.ignore}true{else}false{/if}">
         </div>
       </td>
     </tr>
