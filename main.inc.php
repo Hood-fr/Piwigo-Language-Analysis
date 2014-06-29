@@ -17,7 +17,7 @@ if (!defined('IN_ADMIN'))
 
 global $conf;
 
-defined('PLA_ID') or define('PLA_ID', basename(dirname(__FILE__)));
+define('PLA_ID',    basename(dirname(__FILE__)));
 define('PLA_PATH' , PHPWG_PLUGINS_PATH . PLA_ID . '/');
 define('PLA_ADMIN', get_root_url() . 'admin.php?page=plugin-' . PLA_ID);
 define('PLA_DATA',  $conf['data_location'] . PLA_ID . '/');
@@ -30,11 +30,9 @@ function pla_begin_admin()
   $template->set_prefilter('admin', 'pla_add_menu_item');
 }
 
-function pla_add_menu_item($content, &$smarty)
+function pla_add_menu_item($content)
 {
-  $search = 'href="{$U_UPDATES}">{\'Updates\'|@translate}</a></li>';
+  $search = '{\'Updates\'|@translate}</a></li>';
   $add = '<li><a class="icon-language" href="'.PLA_ADMIN.'">Plugin Language Analysis</a></li>';
   return str_replace($search, $search."\n".$add, $content);
 }
-
-?>
