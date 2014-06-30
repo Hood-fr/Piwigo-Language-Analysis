@@ -2,9 +2,11 @@
 defined('PLA_PATH') or die('Hacking attempt!');
 
 /**
- * list files of a plugin
- * @param: string $id, plugin id
- * @return: array of paths relative to plugin root
+ * List files of a plugin
+ * @param string $id, plugin id
+ * @return nested array of paths relative to plugin root
+ *    Keys are numeric for files or directory name
+ *    Values are file name or array of more entries
  */
 function list_plugin_files($id, $path=null)
 {
@@ -15,17 +17,17 @@ function list_plugin_files($id, $path=null)
   
   if ($path == '/language/')
   {
-    return array();
+    return null;
   }
   
   if (strlen($path)-strrpos($path, '_data/') == 6)
   {
-    return array();
+    return null;
   }
   
   if (($handle = @opendir(PHPWG_PLUGINS_PATH.$id.$path)) === false)
   {
-    return array();
+    return null;
   }
   
   $data = array();
@@ -36,21 +38,118 @@ function list_plugin_files($id, $path=null)
     
     if (is_dir(PHPWG_PLUGINS_PATH.$id.$path.$entry))
     {
-      $data = array_merge($data, list_plugin_files($id, $path.$entry.'/'));
+      $data[$entry.'/'] = list_plugin_files($id, $path.$entry.'/');
     }
     else
     {
       $ext = strtolower(get_extension($entry));
       if (in_array($ext, array('php', 'tpl')))
       {
-        $data[] = $path.$entry;
+        $data[] = $entry;
       }
     }
   }
   
   closedir($handle);
   
-  return $data;
+  uksort($data, 'custom_folder_sort');
+  
+  return array_filter($data);
+}
+
+/**
+ * Merges the result of *list_plugin_files* and data from cache
+ * Needs the result of *list_plugin_languages_files* and *get_loaded_in_main* in global scope
+ * 
+ * @param array &$files
+ * @param array $saved_files
+ * @return nested array of files with metadata
+ *    Keys are numeric for files or directory name
+ *    Values are file metadata (filename, is_admin, ignore, lang_files) or array of more entries
+ */
+function populate_plugin_files(&$files, $saved_files, $root='/', $is_admin=false)
+{
+  global $language_files, $default_lang_files;
+  
+  foreach ($files as $id => &$file)
+  {
+    if (is_array($file))
+    {
+      populate_plugin_files($file,
+        isset($saved_files[$id]) ? $saved_files[$id] : array(),
+        $root.$id,
+        strpos($id, 'admin') !== false || $is_admin
+        );
+    }
+    else if (isset($saved_files[ $file ]))
+    {
+      $id = $file;
+      $file = $saved_files[ $id ];
+      $file['filename'] = $id;
+      $file['lang_files'] = array_intersect($file['lang_files'], array_keys($language_files));
+    }
+    else
+    {
+      $id = $file;
+      $file = array(
+        'filename' => $id,
+        'is_admin' => strpos($id, 'admin') !== false || $is_admin,
+        'ignore' => false,
+        'lang_files' => $default_lang_files,
+        );
+    }
+  }
+  unset($file);
+}
+
+/**
+ * Sanitize the result of config form for direct usage and cache
+ * @param array &$files
+ * @return nested array of files with metadata
+ *    Keys are file name or directory name
+ *    Values are file metadata (is_admin, ignore, lang_files) or array of more entries 
+ */
+function clean_files_from_config(&$files)
+{
+  foreach ($files as $id => &$file)
+  {
+    if (!isset($file['ignore']))
+    {
+      clean_files_from_config($file);
+    }
+    // security against max_input_vars overflow
+    else if (isset($file['is_admin']) && isset($file['ignore']) && isset($file['lang_files']))
+    {
+      $file['is_admin'] = get_boolean($file['is_admin']);
+      $file['ignore'] = get_boolean($file['ignore']);
+      $file['lang_files'] = array_keys(array_filter($file['lang_files'], 'get_boolean'));
+    }
+  }
+  unset($file);
+}
+
+/**
+ * Custom sort callback for files and directories
+ * Alphabetic order with files before directories
+ */
+function custom_folder_sort($a, $b)
+{
+  if (is_int($a) && is_int($b))
+  {
+    return $a-$b;
+  }
+  else if (is_string($a) && is_string($b))
+  {
+    return strnatcasecmp($a, $b);
+  }
+  else if (is_string($a) && is_int($b))
+  {
+    return 1;
+  }
+  else
+  {
+    return -1;
+  }
 }
 
 /**
@@ -75,8 +174,7 @@ function list_plugin_languages_files($id)
     
     if (!is_dir(PHPWG_PLUGINS_PATH.$id.$path.$entry))
     {
-      $ext = strtolower(get_extension($entry));
-      if ($ext == 'php')
+      if (get_extension($entry) == 'php')
       {
         $data[ basename($entry, '.php') ] = $path.$entry;
       }
@@ -86,6 +184,36 @@ function list_plugin_languages_files($id)
   closedir($handle);
   
   return $data;
+}
+
+/**
+ * Construct the list of all used strings in the plugin files
+ * @param string $plugin
+ * @param array $files
+ * @return array multidimensional
+ */
+function analyze_files($plugin, $files, &$strings = array(), $path='')
+{
+  foreach ($files as $id => $file)
+  {
+    if (!isset($file['ignore']))
+    {
+      analyze_files($plugin, $file, $strings, $path.$id);
+    }
+    else
+    {
+      if ($file['ignore']) continue;
+
+      $file_strings = analyze_file($plugin.'/'.$path.$id);
+      
+      foreach ($file_strings as $string => $lines)
+      {
+        $strings[ $string ]['files'][ $path.$id ] = $file + array('lines' => $lines);
+      }
+    }
+  }
+  
+  return $strings;
 }
 
 /**
@@ -110,7 +238,7 @@ function analyze_file($path)
       }
     }
     // translate
-    if (preg_match_all('#\\{\\\\{0,1}["\']{1}(.*?)\\\\{0,1}["\']{1}\\|@?translate#', $line, $matches))
+    if (preg_match_all('#\\{\\\\?["\']{1}(.*?)\\\\?["\']{1}\\|@?translate#', $line, $matches))
     {
       for ($j=0; $j<count($matches[1]); ++$j)
       {
@@ -118,7 +246,7 @@ function analyze_file($path)
       }
     }
     // translate_dec
-    if (preg_match_all('#translate_dec:\\\\{0,1}["\']{1}(.*?)\\\\{0,1}["\']{1}:\\\\{0,1}["\']{1}(.*?)\\\\{0,1}["\']{1}}#', $line, $matches))
+    if (preg_match_all('#translate_dec:\\\\?["\']{1}(.*?)\\\\?["\']{1}:\\\\?["\']{1}(.*?)\\\\?["\']{1}}#', $line, $matches))
     {
       for ($j=0; $j<count($matches[1]); ++$j)
       {
@@ -178,7 +306,7 @@ function get_loaded_in_main($id)
   
   $files = array();
   
-  if (preg_match_all('#load_language\((?:\s*)(?:["\']{1})(.*?)(?:["\']{1})#', $content, $matches))
+  if (preg_match_all('#load_language\\(\s*["\']{1}(.*?)["\']{1}#', $content, $matches))
   {
     $files = $matches[1];
   }
@@ -195,5 +323,3 @@ function load_language_file($path)
   if (!isset($lang)) return array();
   return $lang;
 }
-
-?>

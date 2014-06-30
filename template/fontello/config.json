@@ -2,17 +2,14 @@
   "name": "fontello_pla",
   "css_prefix_text": "iconpla-",
   "css_use_suffix": false,
+  "hinting": true,
+  "units_per_em": 1000,
+  "ascent": 850,
   "glyphs": [
     {
       "uid": "1400d5103edd2fa6d2d61688fee79a5a",
       "css": "ok-squared",
       "code": 59394,
-      "src": "fontawesome"
-    },
-    {
-      "uid": "4ba33d2607902cf690dd45df09774cb0",
-      "css": "plus-circled",
-      "code": 59393,
       "src": "fontawesome"
     },
     {
@@ -31,6 +28,12 @@
       "uid": "b035c28eba2b35c6ffe92aee8b0df507",
       "css": "attention-circled",
       "code": 59397,
+      "src": "fontawesome"
+    },
+    {
+      "uid": "c08a1cde48d96cba21d8c05fa7d7feb1",
+      "css": "doc-text-inv",
+      "code": 59393,
       "src": "fontawesome"
     }
   ]

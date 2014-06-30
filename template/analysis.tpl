@@ -1,11 +1,11 @@
 {footer_script}{literal}
 $('.strings tr.string td.toggler').click(function() {
-  if ($(this).hasClass('iconpla-plus-circled')) {
-    $(this).removeClass('iconpla-plus-circled').addClass('iconpla-minus-circled');
+  if ($(this).hasClass('icon-plus-circled')) {
+    $(this).removeClass('icon-plus-circled').addClass('iconpla-minus-circled');
     $(this).parent().nextUntil('tr.string').show();
   }
   else {
-    $(this).removeClass('iconpla-minus-circled').addClass('iconpla-plus-circled');
+    $(this).removeClass('iconpla-minus-circled').addClass('icon-plus-circled');
     $(this).parent().nextUntil('tr.string').hide();
   }
 });
@@ -28,15 +28,16 @@ $('.strings tr.file').hover(
 );
 
 $('.open-all').click(function() {
-  $('.strings tr.string td.toggler').removeClass('iconpla-plus-circled').addClass('iconpla-minus-circled');
+  $('.strings tr.string td.toggler').removeClass('icon-plus-circled').addClass('iconpla-minus-circled');
   $('.strings tr.file').show();
 });
 $('.open-missing').click(function() {
-  $('.strings tr.string.missing td.toggler').removeClass('iconpla-plus-circled').addClass('iconpla-minus-circled');
+  $('.close-all').click();
+  $('.strings tr.string.missing td.toggler').removeClass('icon-plus-circled').addClass('iconpla-minus-circled');
   $('.strings tr.file.string-missing').show();
 });
 $('.close-all').click(function() {
-  $('.strings tr.string td.toggler').removeClass('iconpla-minus-circled').addClass('iconpla-plus-circled');
+  $('.strings tr.string td.toggler').removeClass('iconpla-minus-circled').addClass('icon-plus-circled');
   $('.strings tr.file').hide();
 });
 
@@ -85,7 +86,7 @@ $('.tiptip').tipTip({
   {foreach from=$PLA_STRINGS item=data key=string}
     <!-- begin string -->
     <tr class="string {$data.stat}">
-      <td class="toggler iconpla-plus-circled"></td>
+      <td class="toggler icon-plus-circled"></td>
       <td>
         {$string|htmlspecialchars}
         {if isset($data.warnings)}<span class="iconpla-attention-circled tiptip" title="{'<br>'|@implode:$data.warnings}"></span>{/if}

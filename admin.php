@@ -24,8 +24,8 @@ else if (isset($_GET['config']))
 {
   $files = list_plugin_files($_GET['plugin_id']);
   $language_files = list_plugin_languages_files($_GET['plugin_id']);
-  
   $default_lang_files = get_loaded_in_main($_GET['plugin_id']);
+  
   if (empty($default_lang_files))
   {
     $default_lang_files = count($language_files)==1 ? array_keys($language_files) : (
@@ -42,25 +42,9 @@ else if (isset($_GET['config']))
     $saved_files = array();
   }
   
-  foreach ($files as &$file)
-  {
-    if (isset($saved_files[ $file ]))
-    {
-      $file = $saved_files[ $file ];
-      $file['lang_files'] = array_intersect($file['lang_files'], array_keys($language_files));
-    }
-    else
-    {
-      $file = array(
-        'path' => $file,
-        'is_admin' => strpos($file, '/admin') === 0 || strpos($file, 'admin.tpl') !== false,
-        'ignore' => false,
-        'lang_files' => $default_lang_files,
-        );
-    }
-  }
-  unset($file);
-  
+  global $language_files, $default_lang_files;
+  populate_plugin_files($files, $saved_files);
+
   $template->assign(array(
     'PLA_STEP' => 'config',
     'PLA_PLUGIN' => $plugins->fs_plugins[ $_GET['plugin_id'] ],
@@ -77,24 +61,12 @@ else if (isset($_GET['analyze']))
   // save
   if (isset($_POST['files']))
   {
-    $files = array();
-    foreach ($_POST['files'] as $file => $data)
-    {
-      $files[ $file ] = array(
-        'path' => $file,
-        'is_admin' => $data['is_admin']=='true',
-        'ignore' => $data['ignore']=='true',
-        'lang_files' => array(),
-        );
-      if (!empty($data['lang_files']))
-      {
-        $files[ $file ]['lang_files'] = array_keys(array_filter($data['lang_files'], create_function('$f', 'return $f=="true";')));
-      }
-    }
+    $files = $_POST['files'];
+    clean_files_from_config($files);
     
     $content = "<?php\nreturn ";
     $content.= var_export($files, true);
-    $content.= ";\n?>";
+    $content.= ";\n";
     
     @mkdir(PLA_DATA, true, 0755);
     file_put_contents(PLA_DATA.$_GET['plugin_id'].'.php', $content);
@@ -104,21 +76,10 @@ else if (isset($_GET['analyze']))
     $files = include(PLA_DATA.$_GET['plugin_id'].'.php');
   }
   
-  $strings = array();
   $counts = array('ok'=>0,'missing'=>0,'useless'=>0);
   
   // get strings list
-  foreach ($files as $file => $file_data)
-  {
-    if ($file_data['ignore']) continue;
-
-    $file_strings = analyze_file($_GET['plugin_id'].$file);
-    
-    foreach ($file_strings as $string => $lines)
-    {
-      $strings[ $string ]['files'][ $file ] = $file_data + array('lines' => $lines);
-    }
-  }
+  $strings = analyze_files($_GET['plugin_id'], $files);
   
   // load language files
   $lang_common = load_language_file(PHPWG_ROOT_PATH.'language/en_UK/common.lang.php');
@@ -259,5 +220,3 @@ $template->assign(array(
 
 $template->set_filename('pla_content', realpath(PLA_PATH.'template/main.tpl'));
 $template->assign_var_from_handle('ADMIN_CONTENT', 'pla_content');
-
-?>

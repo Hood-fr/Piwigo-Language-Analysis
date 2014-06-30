@@ -1,3 +1,7 @@
+[name=plugin_id] + .selectize-control{
+  max-width:300px;
+}
+
 .text-common {
   color:#5E9100 !important;
 }
@@ -43,12 +47,84 @@
       border-radius:5px;
     }
 
-.files {
-  border-collapse:separate;
-  border-spacing:10px 0;
-  text-align:left !important;
+.files, .files * {
   margin:0;
+  padding:0;
+  -moz-box-sizing:border-box;
+  box-sizing:border-box;
 }
+.files.level-0 {
+  width:80%;
+  overflow:hidden;
+}
+  .files table {
+    border-collapse:collapse;
+    border-spacing:0;
+    text-align:left !important;
+    width:100%;
+  }
+  .files th, .files td {
+    padding:0 5px;
+    height:30px;
+    line-height:10px;
+  }
+  
+  .files tbody > tr:nth-child(2n) {
+    background:#f5f5f5;
+  }
+  .files tbody > tr:nth-child(2n+1) {
+    background:#efefef;
+  }
+  
+  .files tr.folder > td.filename {
+    font-weight:bold;
+  }
+  .files tr.folder > td {
+    background:#888;
+    color:#fff;
+  }
+  .files tr.nested > td {
+    padding:0;
+    background:#ddd;
+  }
+    .files tr.nested .files {
+      margin-left:30px;
+      width:calc(100% - 30px);
+      position:relative;
+    }
+      /* the before is used to display marks */
+      .files tr.nested .files:before {
+        content:"";
+        position:absolute;
+        width:15px;
+        height:calc(100% - 14px);
+        top:0; left:-44px;
+        border-left:29px solid #ddd;
+        background-image:linear-gradient(to bottom, white 1px, transparent 1px), linear-gradient(to right, white 1px, transparent 1px);
+        background-position:0px 15px;
+        background-size:15px 30px;
+      }
+      /* the after is used to hide useless marks of the parent */
+      .files tr.nested tr.nested:last-child  > td > .files:after {
+        content:"";
+        position:absolute;
+        background:#ddd;
+        top:-14px; left:-50px;
+        width:15px;
+        height:calc(100% + 14px);
+      }
+    
+  .files th.ignore, .files td.ignore {
+    width:70px;
+  }
+  .files th.type, .files td.type {
+    width:140px;
+  }
+  .files th.other, .files td.other {
+    width:240px;
+  }
+  
+  
 
 .strings {
   border-collapse:collapse;

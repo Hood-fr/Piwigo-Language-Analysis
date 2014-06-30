@@ -1,4 +1,4 @@
-{footer_script}{literal}
+{footer_script}
 $('.switch-button.type span').click(function() {
   $(this).siblings('span').removeClass('active');
   $(this).addClass('active');
@@ -32,51 +32,20 @@ $('.switch-button.ignore span').click(function() {
     $(this).next('input').val('true');
   }
 });
-{/literal}{/footer_script}
+
+$('.folder > td > .switch-button span').click(function() {
+  $(this).removeClass('active')
+    .closest('.folder').next('.nested')
+    .find('tr:not(.folder) > td > .switch-button span[data-val="'+ $(this).data('val') +'"]')
+    .trigger('click');
+});
+{/footer_script}
 
 <form method="POST" action="{$F_ACTION}" class="properties">
 <fieldset>
   <legend>{'Select dependencies'|translate}</legend>
   
-  <table class="files">
-  <thead>
-    <tr>
-      <th></th>
-      <th>{'Core dependency'|translate}</th>
-      <th>{'Local dependencies'|translate}</th>
-      <th>{'Ignore'|translate}</th>
-    </tr>
-  </thead>
-  
-  <tbody>
-  {foreach from=$PLA_FILES item=file}
-    <tr>
-      <td>{$file.path}</td>
-      <td>
-        <div class="switch-button type">
-          <span class="item common {if not $file.is_admin}active{/if}">{'Common'|translate}</span>
-          <span class="item admin {if $file.is_admin}active{/if}">{'Admin'|translate}</span>
-          <input type="hidden" name="files[{$file.path}][is_admin]" value="{if $file.is_admin}true{else}false{/if}">
-        </div>
-      </td>
-      <td>
-        <div class="switch-button other">
-        {foreach from=$PLA_LANG_FILES item=lang_file}
-          <span class="item other {if $lang_file|in_array:$file.lang_files}active{/if}">{$lang_file}</span>
-          <input type="hidden" name="files[{$file.path}][lang_files][{$lang_file}]" value="{if $lang_file|in_array:$file.lang_files}true{else}false{/if}">
-        {/foreach}
-        </div>
-      </td>
-      <td>
-        <div class="switch-button ignore">
-          <span class="item ignore {if $file.ignore}active{/if}">&times;</span>
-          <input type="hidden" name="files[{$file.path}][ignore]" value="{if $file.ignore}true{else}false{/if}">
-        </div>
-      </td>
-    </tr>
-  {/foreach}
-  </tbody>
-  </table>
+  {include file=$PLA_ABS_PATH|cat:'template/config_list.inc.tpl' files=$PLA_FILES level=0 path=""}
   
   <p class="formButtons"><input type="submit" value="{'Continue'|translate}"></p>
 </fieldset>
