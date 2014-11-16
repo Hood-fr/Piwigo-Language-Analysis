@@ -3,7 +3,7 @@
 
 <div class="titrePage">
 	<h2>
-    Plugin Language Analysis
+    Language Analysis
     {if isset($PLA_PLUGIN)}[{$PLA_PLUGIN.name}]{/if}
   </h2>
 </div>
