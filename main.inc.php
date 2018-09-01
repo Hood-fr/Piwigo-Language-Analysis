@@ -1,9 +1,9 @@
 <?php 
 /*
 Plugin Name: Plugin Language Analysis
-Version: auto
+Version: 1.2.0
 Description: Add a tool to analyse translation strings of plugins
-Plugin URI: auto
+Plugin URI: http://piwigo.org/ext/extension_view.php?eid=704
 Author: Mistic
 Author URI: http://www.strangeplanet.fr
 */
